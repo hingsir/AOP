@@ -5,15 +5,34 @@
     Function.prototype.exec = function(){
         var self = this,
             funcName = self.name,
-            args = arguments;
-        var beforeAdvice = AOP.getBeforeAdvice(funcName),
-            afterAdvice = AOP.getAfterAdvice(funcName);
-        beforeAdvice && beforeAdvice.apply(self,args);
-        self.apply(self,args);
-        afterAdvice && afterAdvice.apply(self,args);
+            args = [].slice.call(arguments),
+            beforeAdvice = AOP.getBeforeAdvice(funcName),
+            afterAdvice = AOP.getAfterAdvice(funcName),
+            ret;
+        if(beforeAdvice){
+            ret = beforeAdvice.apply(self,arguments)
+            if(ret === undefined){
+                ret = self.apply(self,arguments);
+            }
+        }else{
+            ret = self.apply(self,arguments);
+        }
+
+        if(afterAdvice){
+            args.unshift(ret);
+            var afterRet = afterAdvice.apply(self,args);
+            if(afterRet !== undefined){
+                return afterRet;
+            }else{
+                return ret;
+            }
+        }else{
+            return ret;
+        }
     }
 
-    AOP.beforeAdvices = AOP.afterAdvices = [];
+    AOP.beforeAdvices = [];
+    AOP.afterAdvices = [];
     AOP.before = function(pointcut,beforeAdvice){
         AOP.beforeAdvices.push({
             pointcut:pointcut,
@@ -26,14 +45,14 @@
             advice:afterAdvice
         });
     }
-    AOP.around = function(pointcut,aroundAdvice){
+    AOP.around = function(pointcut,beforeAdvice,afterAdvice){
         AOP.beforeAdvices.push({
             pointcut:pointcut,
-            advice:aroundAdvice
+            advice:beforeAdvice
         });
         AOP.afterAdvices.push({
             pointcut:pointcut,
-            advice:aroundAdvice
+            advice:afterAdvice
         });
     }
     AOP.getBeforeAdvice = _getAdvice(AOP.beforeAdvices);
@@ -56,6 +75,10 @@
         }
     }
 
-    global.AOP = AOP;
+    if (typeof module !== 'undefined' && module && typeof module.exports !== 'undefined') {
+        module.exports = AOP;
+    }else{
+        global.AOP = AOP;
+    }
 
 })(this);

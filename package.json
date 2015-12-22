@@ -1,0 +1,22 @@
+{
+  "name": "aop-s",
+  "version": "1.0.0",
+  "description": "AOP in JavaScript",
+  "main": "aop.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hingsir/AOP.git"
+  },
+  "keywords": [
+    "aop"
+  ],
+  "author": "hingsir",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/hingsir/AOP/issues"
+  },
+  "homepage": "https://github.com/hingsir/AOP#readme"
+}
